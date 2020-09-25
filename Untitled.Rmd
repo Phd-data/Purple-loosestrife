@@ -1,0 +1,28 @@
+---
+title: "Purple loosestrife"
+author: "Maxwel Coura Oliveira"
+date: "2/23/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+PLS=read.csv("Holt.csv")
+PLS$trt=as.factor(PLS$trt)
+tbl_df(PLS)
+glimpse(PLS)
+View(PLS)
+```
+
+```{r}
+ggplot(PLS, aes(y=Control, x=DATcum, color=trt)) + geom_point(stat="identity") + stat_summary(aes(y = Control, group = trt), fun.y=mean, geom="line")
+```
+

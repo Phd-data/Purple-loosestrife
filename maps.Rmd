@@ -1,0 +1,99 @@
+---
+title: "Maps"
+author: "Maxwel Coura Oliveira"
+date: "3/28/2018"
+output: html_document
+---
+
+```{r packages}
+library(ggplot2)
+library(ggmap)
+library(maps)
+library(grid)
+library(mapdata)
+library(maptools)
+library(stringr)
+library(dplyr)
+library(ggsn)
+```
+
+```{r read Data}
+Data=read.csv("Maps.csv")
+str(Data)
+```
+
+```{r}
+states = map_data("state")
+```
+
+```{r}
+ggplot(data = states) +
+  geom_polygon(aes(x = long, y = lat, fill = region, group = group), color = "white") + 
+  coord_fixed(1.3) +
+  guides(fill=FALSE)
+```
+
+```{r}
+ne_df <- subset(states, region == "nebraska")
+
+head(ne_df)
+```
+
+```{r}
+counties <- map_data("county")
+ne_county <- subset(counties, region == "nebraska")
+
+head(ne_county)
+```
+
+```{r}
+ne_base <- ggplot(data = ne_df, mapping = aes(x = long, y = lat, group = group)) + 
+  coord_fixed(1.3) + 
+  geom_polygon(color = "black", fill = "white")
+ne_base + theme_nothing()
+```
+
+
+
+
+```{r}
+ne_base + 
+  geom_point(data=Data, aes(x=Longitude, y=Latitude, group=Location, shape=Location, color=Location), size=4) +
+  geom_polygon(data = ne_county, fill = "NA", color = "gray") +
+  geom_polygon(color = "black", fill = NA)  +
+  labs(fill="", y="Latitude", x="Longitude") +
+  north(ne_df, location = 'topleft', symbol = 1, anchor = c(x = -104.7, y = 43.2)) +
+  scalebar(data=ne_df, dist = 100, dd2km = T, model = 'International', location = "topright") +
+  scale_colour_manual(values = c("forestgreen", "black", "blue", "red")) +
+  scale_shape_manual(values = c(16, 16, 16, 16)) +
+    theme(axis.text=element_text(size=17, color="black"), 
+        axis.title=element_text(size=20,face="bold"), 
+        panel.background = element_rect(fill="white", color = "black"), 
+        panel.grid.major = element_line(color = "white"), 
+  panel.grid.minor = element_blank(),
+  legend.position=c(0.115,0.18), legend.text = element_text(size = 16, colour = "black"), legend.key = element_rect(fill=NA), panel.border = element_rect(fill=NA,color="black", size=0.5, linetype="solid"),
+legend.background = element_rect(fill =NA), legend.key.width = unit(2.2, "line"), legend.title=element_text(color="black", size=18, face="bold")) + 
+  ggsave("map.tiff", 
+   units="in", width=13, height=6, dpi=300)
+```
+
+```{r}
+ne_base + 
+  geom_point(data=Data, aes(x=Longitude, y=Latitude, group=Location), size=4) +
+  geom_polygon(data = ne_county, fill = "NA", color = "gray") +
+  geom_polygon(color = "black", fill = NA)  +
+  labs(fill="", y="Latitude", x="Longitude") +
+  north(ne_df, location = 'topleft', symbol = 1, anchor = c(x = -104.7, y = 43.2)) +
+  scalebar(data=ne_df, dist = 100, dd2km = T, model = 'International', location = "topright") +
+  scale_colour_manual(values = c("black")) +
+  scale_shape_manual(values = c(15)) +
+    theme(axis.text=element_text(size=17, color="black"), 
+        axis.title=element_text(size=20,face="bold"), 
+        panel.background = element_rect(fill="white", color = "black"), 
+        panel.grid.major = element_line(color = "white"), 
+  panel.grid.minor = element_blank(),
+  legend.position=c(0.115,0.18), legend.text = element_text(size = 16, colour = "black"), legend.key = element_rect(fill=NA), panel.border = element_rect(fill=NA,color="black", size=0.5, linetype="solid"),
+legend.background = element_rect(fill =NA), legend.key.width = unit(2.2, "line"), legend.title=element_blank()) + 
+  ggsave("map1.tiff", 
+   units="in", width=13, height=6, dpi=300)
+```
